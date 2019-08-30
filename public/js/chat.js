@@ -2,11 +2,25 @@
 var socket = io();
 
 
-socket.on('connect',function (){
-    var Textbox = jQuery('[name=message]');
+    socket.on('connect',function (){
     console.log('connected to server');
+    var params = jQuery.deparam(window.location.search);
+    socket.emit('join',params,function(err){
+        if(err){
+            alert('provide valid name and room name');
+            window.location.href('/');
+        }else {
+            console.log('user joined');
+        }
+    });
+    });
+    socket.on('disconnect',function (){
+    console.log('Server is disconnected');
+    });
+
     jQuery('#message-form').on('submit',function(e){
         e.preventDefault();
+        var Textbox = jQuery('[name=message]');
         socket.emit('createMessage',{
             from : 'user',
             text : Textbox.val()
@@ -16,9 +30,7 @@ socket.on('connect',function (){
     });
    
    
-    socket.on('disconnect',function (){
-        console.log('Server is disconnected');
-    });
+   
     socket.on('newMessage',(Message)=>{
         console.log('new Message',Message);
         var formattedTime = moment(Message.createdAt).format('h:mm a');
@@ -43,13 +55,13 @@ socket.on('connect',function (){
         jQuery('#messages').append(html);
 
     });
-});
 
 
 
-var locationbtn = jQuery('#send-location');
-locationbtn.on('click',function(e){
-    if(!navigator.geolocation){
+
+    var locationbtn = jQuery('#send-location');
+    locationbtn.on('click',function(e){
+        if(!navigator.geolocation){
         alert('your browser not support geolocation');
     }
     locationbtn.attr('disabled','disabled').text('sending location');
@@ -66,8 +78,3 @@ locationbtn.on('click',function(e){
         locationbtn.removeAttr('disabled').text('send location');
     });
 });
-
-
-if(null){
-    console.log('this is fasly value');
-}
