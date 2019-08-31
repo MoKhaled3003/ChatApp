@@ -17,6 +17,15 @@ var socket = io();
     socket.on('disconnect',function (){
     console.log('Server is disconnected');
     });
+    
+    socket.on('updateUsersList',function(users){
+        var ol = jQuery('<ol></ol>');
+        users.forEach(function(user){
+            var li = jQuery('<li></li>').text(user);
+            ol.append(li);
+        });
+        jQuery('#users').html(ol);
+    });
 
     jQuery('#message-form').on('submit',function(e){
         e.preventDefault();
